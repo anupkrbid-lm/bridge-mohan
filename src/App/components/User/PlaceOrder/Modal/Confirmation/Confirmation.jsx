@@ -41,7 +41,7 @@ class Confirmation extends Component {
         console.log(error);
         window.location.reload();
       });
-      alert('Processing, Please Wait!');
+      setTimeout(() => alert('Processing, Please Wait!'), 1000);
 
     });
   };
