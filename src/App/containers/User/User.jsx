@@ -49,6 +49,7 @@ class User extends Component {
 
   state = {
     loading: true,
+    maxLimit: 30,
     shops: [],
     user: {
       fullName: '',
@@ -67,6 +68,17 @@ class User extends Component {
       .database()
       .ref()
       .child('shops');
+
+    const maxLimitRef = firebase
+      .database()
+      .ref()
+      .child('maxLimit');
+
+    maxLimitRef.once('value', snap => {
+      this.setState({
+        maxLimit: snap.val()
+      });
+    })
 
     shopsRef.once('value', snap => {
       const initialCartStateIndex = this.initializeCartStateIndex(snap.val());
@@ -217,6 +229,7 @@ class User extends Component {
         <PlaceOrder
           user={this.state.user}
           cart={this.state.cart}
+          maxLimit={this.state.maxLimit}
           validation={validation}
           orderState={this.state.orderState}
           disablePlaceOrderButton={!showPlaceOrderButton}

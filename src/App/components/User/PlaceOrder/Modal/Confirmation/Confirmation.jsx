@@ -18,8 +18,8 @@ class Confirmation extends Component {
       const data = snap.val();
       const dhabawalaLength = (!data || !data.dhabewala)  ? 0 : Object.keys(data.dhabewala).length;
       const paanwalaLength = (!data || !data.paanwala)  ? 0 : Object.keys(data.paanwala).length;
-      console.log(dhabawalaLength, paanwalaLength);
-      if(!data || (dhabawalaLength + paanwalaLength) < 30) {
+      // console.log(this.props.maxLimit);
+      if(!data || (dhabawalaLength + paanwalaLength) < this.props.maxLimit) {
 
         const newPushKey = this.ordersRef.child(this.props.cart[0].shopName).push()
         .key;
