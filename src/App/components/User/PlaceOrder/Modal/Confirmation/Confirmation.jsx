@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import firebase from '../../../../../../firebase';
 import 'firebase/database';
+import axios from 'axios';
 
 import './Confirmation.css';
 import FakeWrapper from '../../../../../hoc/fakeWrapper';
@@ -25,8 +26,23 @@ class Confirmation extends Component {
       };
     });
     this.ordersRef.update(updates).then(() => {
-      window.scrollTo(0, 0);
-      window.location.reload();
+
+
+      axios.post('https://bridgemohan.herokuapp.com/api/v1/send-mail', {
+        cart: this.props.cart,
+        user: this.props.user
+      })
+      .then(function (response) {
+        console.log(response);
+        window.scrollTo(0, 0);
+        window.location.reload();
+      })
+      .catch(function (error) {
+        console.log(error);
+        window.location.reload();
+      });
+      alert('Processing, Please Wait!');
+
     });
   };
 
