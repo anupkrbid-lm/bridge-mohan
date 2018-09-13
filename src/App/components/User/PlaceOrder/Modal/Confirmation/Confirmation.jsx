@@ -13,36 +13,50 @@ class Confirmation extends Component {
     .child('orders');
 
   saveDataToDBHandler = () => {
-    const newPushKey = this.ordersRef.child(this.props.cart[0].shopName).push()
-      .key;
 
-    var updates = {};
-    this.props.cart.forEach(shop => {
-      updates[`${shop.shopName.toLowerCase()}/${newPushKey}`] = {
-        user: this.props.user,
-        orders: shop.products,
-        status: shop.status,
-        total: shop.total
-      };
-    });
-    this.ordersRef.update(updates).then(() => {
+    this.ordersRef.once('value', snap => {
+      const data = snap.val();
+      const dhabawalaLength = (!data.dhabewala)  ? 0 : Object.keys(data.dhabewala).length;
+      const paanwalaLength = (!data.paanwala)  ? 0 : Object.keys(data.paanwala).length;
+      console.log(dhabawalaLength, paanwalaLength);
+      if(!data || (dhabawalaLength + paanwalaLength) < 3) {
 
+        const newPushKey = this.ordersRef.child(this.props.cart[0].shopName).push()
+        .key;
+  
+        var updates = {};
+        this.props.cart.forEach(shop => {
+          updates[`${shop.shopName.toLowerCase()}/${newPushKey}`] = {
+            user: this.props.user,
+            orders: shop.products,
+            status: shop.status,
+            total: shop.total
+          };
+        });
+        this.ordersRef.update(updates).then(() => {
+    
+          axios.post('https://bridgemohan.herokuapp.com/api/v1/send-mail', {
+            cart: this.props.cart,
+            user: this.props.user
+          })
+          .then(function (response) {
+            console.log(response);
+            window.scrollTo(0, 0);
+            window.location.reload();
+          })
+          .catch(function (error) {
+            console.log(error);
+            window.location.reload();
+          });
+          setTimeout(() => alert('Processing, Please Wait!'), 1000);
+    
+        });
 
-      axios.post('https://bridgemohan.herokuapp.com/api/v1/send-mail', {
-        cart: this.props.cart,
-        user: this.props.user
-      })
-      .then(function (response) {
-        console.log(response);
+      } else {
+        alert('Preorder Limit Crossed');
         window.scrollTo(0, 0);
         window.location.reload();
-      })
-      .catch(function (error) {
-        console.log(error);
-        window.location.reload();
-      });
-      setTimeout(() => alert('Processing, Please Wait!'), 1000);
-
+      }
     });
   };
 
